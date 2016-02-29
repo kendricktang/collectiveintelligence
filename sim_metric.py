@@ -1,57 +1,37 @@
 from math import sqrt
 
+def pearson(v1,v2):
+    if len(v1)!=len(v2):
+        raise ValueError('Vectors are different lengths.')
 
-# pearson correlation coefficient for p1 and p2
-def sim_pearsons(prefs, p1, p2):
-    """Pearson correlation coefficient metric"""
-    # Get list of mutually rated items
-    si = {}
-    for item in prefs[p1]:
-        if item in prefs[p2]:
-            si[item] = 1
-
-    # Find number of mutually rated items
-    n = len(si)
-
-    # If no ratings in common, return 0
-    if n == 0:
-        return 0
-
-    # Add up preferences
-    sum1 = sum([prefs[p1][item] for item in si])
-    sum2 = sum([prefs[p2][item] for item in si])
-
-    # Sum up squares
-    sum1sq = sum([pow(prefs[p1][item], 2) for item in si])
-    sum2sq = sum([pow(prefs[p2][item], 2) for item in si])
-
-    # Sum up products
-    pSum = sum([prefs[p1][item]*prefs[p2][item] for item in si])
-
+    # Sums
+    sum1=sum(v1)
+    sum2=sum(v2)
+    
+    # Sum of squares
+    sum1sq=sum([pow(v,2) for v in v1])
+    sum2sq=sum([pow(v,2) for v in v2])
+    
+    # Sum of products
+    psum=sum([v1[i]*v2[i] for i in range(len(v1))])
+    
     # Calculate pearson score
-    num = pSum-(sum1*sum2/n)
-    den = sqrt((sum1sq-pow(sum1, 2)/n)*(sum2sq-pow(sum2, 2)/n))
-    if den == 0:
+    num=psum-(sum1*sum2/len(v1))
+    den=sqrt((sum1sq-pow(sum1,2)/len(v1))*(sum2sq-pow(sum2,2)/len(v1)))
+    if den==0:
         return 0
+        
+    return 1.0-num/den
 
-    r = num/den
-    return r
-
-
-def sim_distance(prefs, p1, p2):
-    """Euclidean distance metric"""
-    # Get list of mutually rated items
-    si = {}
-    for item in prefs[p1]:
-        if item in prefs[p2]:
-            si[item] = 1
-
-    # if no ratings in common, return 0
-    if len(si) == 0:
-        return 0
-
-    # Add up squares of differences
-    sum_of_squares = sum(
-        [pow(prefs[p1][item]-prefs[p2][item], 2) for item in si])
-
-    return 1/(1+sqrt(sum_of_squares))
+def tanamoto(v1,v2):
+    c1,c2,shr=0,0,0
+    
+    for i in range(len(v1)):
+        if v1[i]!=0:
+            c1+=1 # in v1
+        if v2[i]!=0:
+            c2+=1 # in v2
+        if v1[i]!=0 and v2[i]!=0:
+            shr+=1 # in both
+            
+    return 1.0-(float(shr)/(c1+c2-shr))
